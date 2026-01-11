@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BLIXX - Streaming Platform</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div id="app">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="navbar-container">
+                <div class="logo">
+                    <h1>🎬 BLIXX</h1>
+                </div>
+                <div class="nav-links">
+                    <a href="#home" onclick="showHome()">Home</a>
+                    <a href="#movies" onclick="showMovies()">Movies</a>
+                    <a href="#trending" onclick="showTrending()">Trending</a>
+                    <div class="auth-links">
+                        <button id="loginBtn" onclick="showLogin()" class="btn btn-primary">Login</button>
+                        <button id="registerBtn" onclick="showRegister()" class="btn btn-secondary">Register</button>
+                        <button id="logoutBtn" onclick="logout()" class="btn btn-danger" style="display:none;">Logout</button>
+                        <a id="profileLink" href="#profile" onclick="showProfile()" style="display:none; color:#fff; margin-left:15px;">
+                            <span id="username"></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="container">
+            <!-- Home Section -->
+            <section id="homeSection" class="section active">
+                <div class="hero">
+                    <h2>Welcome to BLIXX</h2>
+                    <p>Your secure streaming platform for movies and content</p>
+                    <button onclick="showMovies()" class="btn btn-large">Explore Now</button>
+                </div>
+            </section>
+
+            <!-- Auth Section -->
+            <section id="authSection" class="section" style="display:none;">
+                <div class="auth-container">
+                    <!-- Login Form -->
+                    <div id="loginForm" class="form-container">
+                        <h2>Login</h2>
+                        <form onsubmit="handleLogin(event)">
+                            <input type="text" id="loginUsername" placeholder="Username" required>
+                            <input type="password" id="loginPassword" placeholder="Password" required>
+                            <button type="submit" class="btn btn-primary">Login</button>
+                            <p>Don't have an account? <a onclick="switchToRegister()">Register here</a></p>
+                        </form>
+                        <div id="loginError" class="error-message" style="display:none;"></div>
+                    </div>
+
+                    <!-- Register Form -->
+                    <div id="registerForm" class="form-container" style="display:none;">
+                        <h2>Register</h2>
+                        <form onsubmit="handleRegister(event)">
+                            <input type="text" id="regUsername" placeholder="Username" required>
+                            <input type="email" id="regEmail" placeholder="Email" required>
+                            <input type="password" id="regPassword" placeholder="Password (min 8 chars)" required minlength="8">
+                            <input type="password" id="regConfirmPassword" placeholder="Confirm Password" required>
+                            <button type="submit" class="btn btn-primary">Register</button>
+                            <p>Already have an account? <a onclick="switchToLogin()">Login here</a></p>
+                        </form>
+                        <div id="regError" class="error-message" style="display:none;"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Movies Section -->
+            <section id="moviesSection" class="section" style="display:none;">
+                <h2>All Movies</h2>
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Search movies..." onkeyup="searchMovies()">
+                </div>
+                <div id="moviesList" class="movies-grid">
+                    <div class="loading">Loading movies...</div>
+                </div>
+            </section>
+
+            <!-- Trending Section -->
+            <section id="trendingSection" class="section" style="display:none;">
+                <h2>Trending Now</h2>
+                <div id="trendingList" class="movies-grid">
+                    <div class="loading">Loading trending movies...</div>
+                </div>
+            </section>
+
+            <!-- Upload Section -->
+            <section id="uploadSection" class="section" style="display:none;">
+                <h2>Upload Movie</h2>
+                <form id="uploadForm" onsubmit="handleUpload(event)" class="upload-form">
+                    <div class="form-group">
+                        <label>Movie File</label>
+                        <input type="file" id="movieFile" accept="video/*" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" id="movieTitle" placeholder="Movie title" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="movieDesc" placeholder="Movie description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Genre</label>
+                        <input type="text" id="movieGenre" placeholder="e.g., Action, Drama">
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="moviePublic"> Make Public
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Upload Movie</button>
+                    <div id="uploadProgress" style="display:none; margin-top:10px;">
+                        <div class="progress-bar">
+                            <div id="progressFill"></div>
+                        </div>
+                        <span id="progressText">0%</span>
+                    </div>
+                </form>
+                <div id="uploadError" class="error-message" style="display:none;"></div>
+            </section>
+
+            <!-- Profile Section -->
+            <section id="profileSection" class="section" style="display:none;">
+                <h2>My Profile</h2>
+                <div class="profile-container">
+                    <div id="profileInfo" class="profile-info">
+                        <p><strong>Username:</strong> <span id="profileUsername"></span></p>
+                        <p><strong>Email:</strong> <span id="profileEmail"></span></p>
+                        <p><strong>Joined:</strong> <span id="profileJoined"></span></p>
+                    </div>
+                    <button onclick="showUpload()" class="btn btn-primary">Upload Movie</button>
+                    <div id="myMovies" style="margin-top: 30px;">
+                        <h3>My Movies</h3>
+                        <div id="myMoviesList" class="movies-grid">
+                            <div class="loading">Loading your movies...</div>
+                        </div>
+                    </div>
+                    <div id="watchHistory" style="margin-top: 30px;">
+                        <h3>Watch History</h3>
+                        <div id="watchHistoryList" class="watch-history-list">
+                            <div class="loading">Loading watch history...</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Movie Player Section -->
+            <section id="playerSection" class="section" style="display:none;">
+                <button onclick="goBack()" class="btn btn-secondary">← Back</button>
+                <div class="player-container">
+                    <video id="videoPlayer" controls style="width: 100%; max-height: 600px; background: #000;">
+                        Your browser does not support HTML5 video.
+                    </video>
+                </div>
+                <div id="movieDetails" class="movie-details">
+                    <h2 id="playerTitle"></h2>
+                    <p id="playerDesc"></p>
+                    <div class="details-grid">
+                        <p><strong>Duration:</strong> <span id="playerDuration"></span> min</p>
+                        <p><strong>Rating:</strong> <span id="playerRating"></span>/10</p>
+                        <p><strong>Genre:</strong> <span id="playerGenre"></span></p>
+                        <p><strong>Views:</strong> <span id="playerViews"></span></p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2026 BLIXX Streaming Platform. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script src="api.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
